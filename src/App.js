@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Layout, Tree } from 'antd';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { solarizedlight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Chat, { Bubble, useMessages } from '@chatui/core';
 import { parseFileFromMarkdown, parseTreeFromFiles } from './utils/ParseMarkdown.js';
 import { marked } from "marked";
@@ -11,6 +11,7 @@ import '@chatui/core/dist/index.css';
 import './App.css';
 import '@chatui/core/es/styles/index.less';
 import './chatui-theme.css';
+import { FileOutlined, FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -149,6 +150,27 @@ const App = () => {
     });
   };
 
+  const renderTreeNodes = (data) => { 
+    if (!Array.isArray(data)) {  
+      return []; 
+    }  
+    return data.map(item => { 
+      const isFile = item.icon === 'file';  
+      const icon = isFile ? <FileOutlined /> : <FolderOutlined />;   
+      return {  
+        title: (  
+          <span>  
+            {icon}
+            {item.title}  
+          </span>  
+        ),  
+        key: item.key,  
+        icon: icon,  
+        children: renderTreeNodes(item.children),  
+      };  
+    });  
+  };  
+
   function renderMessageContent(msg) {
     const { content } = msg;
     return <Bubble content={content.text} />;
@@ -174,7 +196,8 @@ const App = () => {
         <Layout>
           <Sider width={250} style={{ background: '#f0f2f5', padding: '15px' }}>
             <Tree
-              treeData={treesData}
+              treeData={renderTreeNodes(treesData)}  
+              switcherIcon={<FolderOpenOutlined />}  
               defaultExpandAll={true}
               onSelect={handleTreeSelect}
               style={{ padding: '10px' }}
@@ -182,8 +205,8 @@ const App = () => {
           </Sider>
           <Layout style={{ padding: '0px' }}>
             <Content style={{ background: '#fff', padding: 5 }}>
-              <div style={{ height: '100vh', overflow: 'auto', marginTop: '1px' }}>
-                <SyntaxHighlighter language="javascript" style={solarizedlight}>
+              <div style={{ height: '100vh', overflow: 'auto', marginTop: '1px' ,fontSize: '17px'}}>
+                <SyntaxHighlighter language="javascript" style={vs} showLineNumbers={true}>
                   {code}
                 </SyntaxHighlighter>
               </div>

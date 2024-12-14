@@ -7,17 +7,17 @@ const parseMarkdown = (markdown) => {
 
   while ((matches = codeBlockRegex.exec(markdown)) !== null) {
     var fileType = matches[1];
-    if (fileType===undefined){
-      fileType = "bash" ;
+    if (fileType === undefined) {
+      fileType = "bash";
     }
     const lines = matches[2].split('\n');
     var fileName = "";
-    if (fileType === ""){
-      fileType = "bash" ;
+    if (fileType === "") {
+      fileType = "bash";
     }
-    fileType = fileType.trim() ;
+    fileType = fileType.trim();
     if (fileType !== "bash") {
-      if (lines[0]!==undefined){
+      if (lines[0] !== undefined) {
         if (lines[0].trim().startsWith("//") || lines[0].trim().startsWith("#")) {
           fileName = lines[0].replace("//", '').replace("#", '').trim();
         }
@@ -46,7 +46,8 @@ const buildTree = (files) => {
       key = index === parts.length - 1 ? file : index + '-' + part;
       let child = current.find(item => item.title === part);
       if (!child) {
-        child = { title: part, key: key, children: [] };
+        const isFile = index === parts.length - 1 && part.includes('.');
+        child = { title: part, key: key, children: [], icon: isFile ? 'file' : 'folder' };
         current.push(child);
       }
       current = child.children;
@@ -92,4 +93,4 @@ const test = () => {
 test()
 */
 
-module.exports = { parseFileFromMarkdown,parseTreeFromFiles };
+module.exports = { parseFileFromMarkdown, parseTreeFromFiles };
