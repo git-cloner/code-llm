@@ -12,6 +12,7 @@ import './App.css';
 import '@chatui/core/es/styles/index.less';
 import './chatui-theme.css';
 import { FileOutlined, FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
+import { downloadFiles } from './utils/FileDownloader.js';
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -150,26 +151,36 @@ const App = () => {
     });
   };
 
-  const renderTreeNodes = (data) => { 
-    if (!Array.isArray(data)) {  
-      return []; 
-    }  
-    return data.map(item => { 
-      const isFile = item.icon === 'file';  
-      const icon = isFile ? <FileOutlined /> : <FolderOutlined />;   
-      return {  
-        title: (  
-          <span>  
+  const _downloadFiles = () => {
+    if (!Array.isArray(files)) {
+      return;
+    }
+    if (files.length === 0) {
+      return;
+    }
+    downloadFiles(files) ;
+  }
+
+  const renderTreeNodes = (data) => {
+    if (!Array.isArray(data)) {
+      return [];
+    }
+    return data.map(item => {
+      const isFile = item.icon === 'file';
+      const icon = isFile ? <FileOutlined /> : <FolderOutlined />;
+      return {
+        title: (
+          <span>
             {icon}
-            {item.title}  
-          </span>  
-        ),  
-        key: item.key,  
-        icon: icon,  
-        children: renderTreeNodes(item.children),  
-      };  
-    });  
-  };  
+            {item.title}
+          </span>
+        ),
+        key: item.key,
+        icon: icon,
+        children: renderTreeNodes(item.children),
+      };
+    });
+  };
 
   function renderMessageContent(msg) {
     const { content } = msg;
@@ -180,6 +191,7 @@ const App = () => {
     <Layout style={{ height: '100vh' }}>
       <Header style={{ color: 'white', fontSize: '20px', textAlign: 'left', display: 'flex', justifyContent: 'space-between' }}>
         <div>llm-code</div>
+        <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}>下载所有文件</a>
         <a href="https://github.com/git-cloner/code-llm" target="_blank" style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }} rel="noopener noreferrer">
           源码
         </a>
@@ -196,8 +208,8 @@ const App = () => {
         <Layout>
           <Sider width={250} style={{ background: '#f0f2f5', padding: '15px' }}>
             <Tree
-              treeData={renderTreeNodes(treesData)}  
-              switcherIcon={<FolderOpenOutlined />}  
+              treeData={renderTreeNodes(treesData)}
+              switcherIcon={<FolderOpenOutlined />}
               defaultExpandAll={true}
               onSelect={handleTreeSelect}
               style={{ padding: '10px' }}
@@ -205,7 +217,7 @@ const App = () => {
           </Sider>
           <Layout style={{ padding: '0px' }}>
             <Content style={{ background: '#fff', padding: 5 }}>
-              <div style={{ height: '100vh', overflow: 'auto', marginTop: '1px' ,fontSize: '17px'}}>
+              <div style={{ height: '100vh', overflow: 'auto', marginTop: '1px', fontSize: '17px' }}>
                 <SyntaxHighlighter language="javascript" style={vs} showLineNumbers={true}>
                   {code}
                 </SyntaxHighlighter>

@@ -24,11 +24,13 @@ const parseMarkdown = (markdown) => {
       }
     }
     const fileContent = matches[2].trim();
-    files.push({
-      type: fileType,
-      path: fileName,
-      content: fileContent,
-    });
+    if (fileName.trim() !== "") {
+      files.push({
+        type: fileType,
+        path: fileName,
+        content: fileContent,
+      });
+    }
   }
 
   return files;
