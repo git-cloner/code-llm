@@ -168,6 +168,7 @@ const App = () => {
             messages={messages}
             renderMessageContent={renderMessageContent}
             onSend={handleSend}
+            placeholder="请输入您的需求，如：使用 Tailwind 在 React 中构建一个邮件管理应用程序"
           />
         </Sider>
         <Layout>
