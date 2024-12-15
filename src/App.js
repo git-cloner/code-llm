@@ -11,9 +11,9 @@ import '@chatui/core/dist/index.css';
 import './App.css';
 import '@chatui/core/es/styles/index.less';
 import './chatui-theme.css';
-import { FileOutlined, FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
+import { FileOutlined, FolderOpenOutlined, FolderOutlined, DownloadOutlined, GithubOutlined, CodepenCircleOutlined } from '@ant-design/icons';
 import { downloadFiles } from './utils/FileDownloader.js';
-import sys_prompt from './utils/prompts.js' ;
+import sys_prompt from './utils/prompts.js';
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -138,7 +138,7 @@ const App = () => {
     if (files.length === 0) {
       return;
     }
-    downloadFiles(files) ;
+    downloadFiles(files);
   }
 
   const renderTreeNodes = (data) => {
@@ -169,11 +169,16 @@ const App = () => {
   return (
     <Layout style={{ height: '100vh' }}>
       <Header style={{ color: 'white', fontSize: '20px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ flex: '1' }}>llm-code</div>
+        <div style={{ flex: '1' }}>
+          <CodepenCircleOutlined style={{ marginRight: 8 }} />llm-code</div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}>打包下载</a>
-          <a href="https://github.com/git-cloner/code-llm" target="_blank" style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }} rel="noopener noreferrer">
-            网站源码
+          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}>
+            <DownloadOutlined style={{ marginRight: 8 }} />打包下载
+          </a>
+          <a href="https://github.com/git-cloner/code-llm" target="_blank"
+            style={{ color: 'white', fontSize: '16px', textDecoration: 'none', marginLeft: 20 }}
+            rel="noopener noreferrer">
+            <GithubOutlined style={{ marginRight: 8 }} />网站源码
           </a>
         </div>
       </Header>
