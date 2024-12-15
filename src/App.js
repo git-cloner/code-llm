@@ -14,6 +14,7 @@ import './chatui-theme.css';
 import { FileOutlined, FolderOpenOutlined, FolderOutlined, DownloadOutlined, GithubOutlined, CodepenCircleOutlined } from '@ant-design/icons';
 import { downloadFiles } from './utils/FileDownloader.js';
 import sys_prompt from './utils/prompts.js';
+import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c';
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -28,6 +29,7 @@ const App = () => {
   const [treesData, setTreesData] = useState('');
   const [files, setFiles] = useState('');
   const [code, setCode] = useState('// 选择左侧文件以查看代码');
+  const [language, setLanguage] = useState('javascript');
   const { messages, appendMsg, setTyping } = useMessages([]);
 
   async function chat_stream(prompt, _msgId) {
@@ -113,6 +115,19 @@ const App = () => {
     }
   };
 
+  function getFileLanguage(type) {
+    if (type === 'js') {
+      type = 'javascript';
+    }
+    else if (type == 'md') {
+      type = 'markdown';
+    }
+    else if (type == 'py') {
+      type = 'python';
+    }
+    return type;
+  };
+
   const defaultTreeSelect = (_files) => {
     if (_files.length === 0) {
       return;
@@ -120,6 +135,7 @@ const App = () => {
     _files.forEach(({ type, path, content }) => {
       if (type !== "bash") {
         setCode(content);
+        setLanguage(getFileLanguage(type));
         return;
       }
     });
@@ -129,6 +145,7 @@ const App = () => {
     files.forEach(({ type, path, content }) => {
       if (path === selectedKeys[0]) {
         setCode(content);
+        setLanguage(getFileLanguage(type));
         return;
       }
     });
@@ -210,7 +227,7 @@ const App = () => {
           <Layout>
             <Content style={{ background: '#fff', padding: 3 }}>
               <div style={{ height: '100vh', overflow: 'auto', marginTop: '0px', fontSize: '15px' }}>
-                <SyntaxHighlighter language="javascript" style={prism} showLineNumbers={true}>
+                <SyntaxHighlighter language={language} style={prism} showLineNumbers={true}>
                   {code}
                 </SyntaxHighlighter>
               </div>
