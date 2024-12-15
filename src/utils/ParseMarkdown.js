@@ -18,8 +18,10 @@ const parseMarkdown = (markdown) => {
     fileType = fileType.trim();
     if (fileType !== "bash") {
       if (lines[0] !== undefined) {
-        if (lines[0].trim().startsWith("//") || lines[0].trim().startsWith("#")) {
-          fileName = lines[0].replace("//", '').replace("#", '').trim();
+        if (lines[0].trim().startsWith("//") ||
+          lines[0].trim().startsWith("#") ||
+          lines[0].trim().startsWith("<!--")) {
+          fileName = lines[0].replace("//", '').replace("#", '').replace("<!--", '').replace("-->", '').trim();
         }
       }
     }

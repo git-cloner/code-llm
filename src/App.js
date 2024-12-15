@@ -49,6 +49,14 @@ const App = () => {
         import streamlit.components.v1 as components
         import random
         \`\`\`
+
+        \`\`\`html
+        <!--  index.html  -->
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="utf-8" />
+        \`\`\`
         `
       }
     );
@@ -65,10 +73,6 @@ const App = () => {
       }
       full_text = full_text + chunk.choices[0]?.delta?.content || '';
       _updateMsg(full_text.trim());
-      //updateMsg(_msgId, {
-      //  type: "text",
-      //  content: { text: marked(full_text.trim()) }
-      //});
     }
     message_history.push({ "role": "assistant", "content": full_text });
     //
