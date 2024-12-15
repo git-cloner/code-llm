@@ -20,8 +20,12 @@ const parseMarkdown = (markdown) => {
       if (lines[0] !== undefined) {
         if (lines[0].trim().startsWith("//") ||
           lines[0].trim().startsWith("#") ||
+          lines[0].trim().startsWith("--") ||
           lines[0].trim().startsWith("<!--")) {
-          fileName = lines[0].replace("//", '').replace("#", '').replace("<!--", '').replace("-->", '').trim();
+          fileName = lines[0].replace("//", '')
+            .replace("#", '').replace("<!--", '')
+            .replace("-->", '')
+            .replace("--", '').trim();
         }
       }
     }
