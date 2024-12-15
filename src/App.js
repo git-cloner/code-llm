@@ -188,9 +188,10 @@ const App = () => {
 
   return (
     <Layout style={{ height: '100vh' }}>
-      <Header style={{ color: 'black', backgroundColor: 'lightgray', fontSize: '20px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Header style={{ color: 'black', backgroundColor: 'lightgray', fontSize: '18px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ flex: '1' }}>
-          <CodepenCircleOutlined style={{ marginRight: 8 }} />llm-code</div>
+          <CodepenCircleOutlined style={{ marginRight: 8 }} />
+          LLM-Code代码生成工具---支持Java、React、Vue、Python、C++、go、sql、Lua等</div>
         <div style={{ display: 'flex', gap: '10px' }}>
           <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'black', fontSize: '16px', textDecoration: 'none' }}>
             <DownloadOutlined style={{ marginRight: 8 }} />打包下载
