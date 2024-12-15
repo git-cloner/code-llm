@@ -13,6 +13,7 @@ import '@chatui/core/es/styles/index.less';
 import './chatui-theme.css';
 import { FileOutlined, FolderOpenOutlined, FolderOutlined } from '@ant-design/icons';
 import { downloadFiles } from './utils/FileDownloader.js';
+import sys_prompt from './utils/prompts.js' ;
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -32,32 +33,7 @@ const App = () => {
   async function chat_stream(prompt, _msgId) {
     message_history.push(
       {
-        role: 'system', content:
-          `
-        你是一个人工智能助理。
-        重要！输出的文本中，如果包含代码文件，则在代码块中，要将文件名加上注释放到代码块的第一行，如：
-        \`\`\`jsx
-        // app.js
-        import React, { useState } from 'react';
-        import axios from 'axios';
-        \`\`\`
-
-        \`\`\`python
-        # app.py
-        from openai import OpenAI
-        import streamlit as st
-        import streamlit.components.v1 as components
-        import random
-        \`\`\`
-
-        \`\`\`html
-        <!--  index.html  -->
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="utf-8" />
-        \`\`\`
-        `
+        role: 'system', content: sys_prompt
       }
     );
     message_history.push({ role: 'user', content: prompt });
@@ -195,9 +171,9 @@ const App = () => {
       <Header style={{ color: 'white', fontSize: '20px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ flex: '1' }}>llm-code</div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}>下载所有文件</a>
+          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}>打包下载</a>
           <a href="https://github.com/git-cloner/code-llm" target="_blank" style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }} rel="noopener noreferrer">
-            源码
+            网站源码
           </a>
         </div>
       </Header>
