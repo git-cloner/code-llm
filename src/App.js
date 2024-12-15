@@ -49,9 +49,12 @@ const App = () => {
       }
       full_text = full_text + chunk.choices[0]?.delta?.content || '';
       _updateMsg(full_text.trim());
+      showFiles(full_text);
     }
     message_history.push({ "role": "assistant", "content": full_text });
-    //
+  }
+
+  function showFiles(full_text) {
     let files = parseFileFromMarkdown(full_text);
     setFiles(files);
     setTreesData(parseTreeFromFiles(files));
