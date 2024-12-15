@@ -34,7 +34,11 @@ const parseMarkdown = (markdown) => {
       });
     }
   }
-
+  files.push({
+    type: 'md',
+    path: 'README.md',
+    content: markdown.replace(/```[\s\S]*?```/g, '')
+  });
   return files;
 };
 

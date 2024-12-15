@@ -171,22 +171,22 @@ const App = () => {
 
   return (
     <Layout style={{ height: '100vh' }}>
-      <Header style={{ color: 'white', fontSize: '20px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Header style={{ color: 'black', backgroundColor: 'lightgray', fontSize: '20px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ flex: '1' }}>
           <CodepenCircleOutlined style={{ marginRight: 8 }} />llm-code</div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}>
+          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'black', fontSize: '16px', textDecoration: 'none' }}>
             <DownloadOutlined style={{ marginRight: 8 }} />打包下载
           </a>
           <a href="https://github.com/git-cloner/code-llm" target="_blank"
-            style={{ color: 'white', fontSize: '16px', textDecoration: 'none', marginLeft: 20 }}
+            style={{ color: 'black', fontSize: '16px', textDecoration: 'none', marginLeft: 20 }}
             rel="noopener noreferrer">
             <GithubOutlined style={{ marginRight: 8 }} />网站源码
           </a>
         </div>
       </Header>
       <Layout>
-        <Sider width={550} style={{ background: '#ffffff', padding: '10px' }}>
+        <Sider width={550} style={{ background: '#ffffff', padding: '5px' }}>
           <Chat
             messages={messages}
             renderMessageContent={renderMessageContent}
@@ -195,21 +195,21 @@ const App = () => {
           />
         </Sider>
         <Layout>
-          <Sider width={250} style={{ background: '#f0f2f5', padding: '15px' }}>
+          <Sider width={250} style={{ background: 'lightgray', padding: '1px' }}>
             <Tree
               showLine
               treeData={renderTreeNodes(treesData)}
               switcherIcon={<FolderOpenOutlined />}
               defaultExpandAll={true}
               onSelect={handleTreeSelect}
-              style={{ padding: '10px' }}
+              style={{ padding: '2px' }}
               autoExpandParent={true}
               showIcon
             />
           </Sider>
-          <Layout style={{ padding: '0px' }}>
-            <Content style={{ background: '#fff', padding: 5 }}>
-              <div style={{ height: '100vh', overflow: 'auto', marginTop: '1px', fontSize: '17px' }}>
+          <Layout>
+            <Content style={{ background: '#fff', padding: 3 }}>
+              <div style={{ height: '100vh', overflow: 'auto', marginTop: '0px', fontSize: '15px' }}>
                 <SyntaxHighlighter language="javascript" style={prism} showLineNumbers={true}>
                   {code}
                 </SyntaxHighlighter>
