@@ -11,10 +11,11 @@ import '@chatui/core/dist/index.css';
 import './App.css';
 import '@chatui/core/es/styles/index.less';
 import './chatui-theme.css';
-import { FileOutlined, FolderOpenOutlined, FolderOutlined, DownloadOutlined, GithubOutlined, CodepenCircleOutlined } from '@ant-design/icons';
+import { FileOutlined, FolderOutlined, 
+    DownloadOutlined, GithubOutlined, CodepenCircleOutlined,
+    HomeOutlined } from '@ant-design/icons';
 import { downloadFiles } from './utils/FileDownloader.js';
 import sys_prompt from './utils/prompts.js';
-import language from 'react-syntax-highlighter/dist/esm/languages/hljs/1c';
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -186,20 +187,52 @@ const App = () => {
     return <Bubble content={content.text} />;
   }
 
+  const defaultQuickReplies = [
+    {
+      name: '使用 Tailwind 在 React 中构建一个邮件管理应用程序',
+      isNew: true,
+    },
+    {
+      name: '使用 Astro 构建一个任务管理应用程序',
+      isNew: true,
+    },
+    {
+      name: '使用 React 构建一个ChatBot程序',
+      isNew: true,
+    },
+    {
+      name: '如何实现多AI Agent应用，实现任务自动分解、执行？',
+      isNew: true,
+    },
+  ];
+
+  function handleQuickReplyClick(item) {
+    handleSend('text', item.name);
+  }
+
   return (
     <Layout style={{ height: '100vh' }}>
       <Header style={{ color: 'black', backgroundColor: 'lightgray', fontSize: '18px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ flex: '1' }}>
           <CodepenCircleOutlined style={{ marginRight: 8 }} />
-          LLM-Code代码生成工具---支持Java、React、Vue、Python、C++、go、sql、Lua等</div>
+          <span>LLM-Code</span>
+          <span style={{ fontSize: '14px', marginLeft: '10px', color: 'blue' }}>
+            代码生成工具---支持Java、React、Vue、Python、C++、go、sql、Lua等
+          </span>
+        </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <a href="#" download="allFiles.zip" onClick={() => _downloadFiles()} style={{ color: 'black', fontSize: '16px', textDecoration: 'none' }}>
+          <a href="#" onClick={() => _downloadFiles()} style={{ color: 'black', fontSize: '16px', textDecoration: 'none' }}>
             <DownloadOutlined style={{ marginRight: 8 }} />打包下载
           </a>
           <a href="https://github.com/git-cloner/code-llm" target="_blank"
             style={{ color: 'black', fontSize: '16px', textDecoration: 'none', marginLeft: 20 }}
             rel="noopener noreferrer">
             <GithubOutlined style={{ marginRight: 8 }} />网站源码
+          </a>
+          <a href="https://gitclone.com" target="_blank"
+            style={{ color: 'black', fontSize: '16px', textDecoration: 'none', marginLeft: 20 }}
+            rel="noopener noreferrer">
+            <HomeOutlined style={{ marginRight: 8 }} />首页
           </a>
         </div>
       </Header>
@@ -210,6 +243,8 @@ const App = () => {
             renderMessageContent={renderMessageContent}
             onSend={handleSend}
             placeholder="请输入您的需求，如：使用 Tailwind 在 React 中构建一个邮件管理应用程序"
+            quickReplies={defaultQuickReplies}
+            onQuickReplyClick={handleQuickReplyClick}
           />
         </Sider>
         <Layout>
@@ -217,7 +252,6 @@ const App = () => {
             <Tree
               showLine
               treeData={renderTreeNodes(treesData)}
-              switcherIcon={<FolderOpenOutlined />}
               defaultExpandAll={true}
               onSelect={handleTreeSelect}
               style={{ padding: '2px' }}
