@@ -11,11 +11,14 @@ import '@chatui/core/dist/index.css';
 import './App.css';
 import '@chatui/core/es/styles/index.less';
 import './chatui-theme.css';
-import { FileOutlined, FolderOutlined, 
-    DownloadOutlined, GithubOutlined, CodepenCircleOutlined,
-    HomeOutlined } from '@ant-design/icons';
+import {
+  FileOutlined, FolderOutlined,
+  DownloadOutlined, GithubOutlined, CodepenCircleOutlined,
+  HomeOutlined
+} from '@ant-design/icons';
 import { downloadFiles } from './utils/FileDownloader.js';
 import sys_prompt from './utils/prompts.js';
+import packageJson from '../package.json';
 
 const { Header, Content, Sider } = Layout;
 const openai = new OpenAI({
@@ -210,12 +213,17 @@ const App = () => {
     handleSend('text', item.name);
   }
 
+  function handleVersionClick() {
+    let versionInfo = packageJson.name + ' ' + packageJson.version;
+    alert(versionInfo);
+  }
+
   return (
     <Layout style={{ height: '100vh' }}>
       <Header style={{ color: 'black', backgroundColor: 'lightgray', fontSize: '18px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ flex: '1' }}>
           <CodepenCircleOutlined style={{ marginRight: 8 }} />
-          <span>LLM-Code</span>
+          <span onClick={handleVersionClick}>LLM-Code</span>
           <span style={{ fontSize: '14px', marginLeft: '10px', color: 'blue' }}>
             代码生成工具---支持Java、React、Vue、Python、C++、go、sql、Lua等
           </span>

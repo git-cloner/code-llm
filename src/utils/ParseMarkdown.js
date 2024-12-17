@@ -38,10 +38,13 @@ const parseMarkdown = (markdown) => {
       });
     }
   }
+  //剔除代码块（但要保留命令行）
+  var newMarkdown = markdown.replace(/```bash([\s\S]*?)```/g, '$1');  
+  newMarkdown = newMarkdown.replace(/```sh([\s\S]*?)```/g, '$1'); 
   files.push({
     type: 'md',
     path: 'README.md',
-    content: markdown.replace(/```[\s\S]*?```/g, '')
+    content: newMarkdown.replace(/```[\s\S]*?```/g, '<代码请查看源文件>')
   });
   return files;
 };
