@@ -1,9 +1,9 @@
 const parseMarkdown = (markdown) => {
   // 使用正则表达式匹配所有的代码块  
   const codeBlockRegex = /```(\w+)?\s*\n([\s\S]*?)```/g;
-
   let matches;
   const files = [];
+  let i = 0 ;
 
   while ((matches = codeBlockRegex.exec(markdown)) !== null) {
     var fileType = matches[1];
@@ -11,6 +11,7 @@ const parseMarkdown = (markdown) => {
       fileType = "bash";
     }
     const lines = matches[2].split('\n');
+    const fileContent = matches[2].trim();
     var fileName = "";
     if (fileType === "") {
       fileType = "bash";
@@ -28,8 +29,14 @@ const parseMarkdown = (markdown) => {
             .replace("--", '').trim();
         }
       }
+    }else{
+      files.push({
+        type: 'bash',
+        path: 'bash-' + i + '.md' ,
+        content: fileContent,
+      });
+      i++ ;
     }
-    const fileContent = matches[2].trim();
     if (fileName.trim() !== "") {
       files.push({
         type: fileType,
@@ -78,9 +85,7 @@ const parseFileFromMarkdown = (markdownText) => {
 const parseTreeFromFiles = (files) => {
   let paths = [];
   files.forEach(({ type, path, content }) => {
-    if (type !== 'bash') {
-      paths.push(path);
-    }
+    paths.push(path);
   });
   return buildTree(paths);
 }

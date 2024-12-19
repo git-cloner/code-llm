@@ -1,12 +1,13 @@
 {
   "name": "code-llm",
-  "version": "0.3.2",
+  "version": "0.5.2",
   "private": true,
   "dependencies": {
     "@chatui/core": "^2.4.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@webcontainer/api": "^1.5.1-internal.4",
     "ajv": "^8.17.1",
     "antd": "^5.22.4",
     "file-saver": "^2.0.5",

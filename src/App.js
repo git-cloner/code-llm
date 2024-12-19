@@ -1,6 +1,6 @@
 // src/App.js  
-import React, { useState } from 'react';
-import { Layout, Tree } from 'antd';
+import React, { useState, useRef } from 'react';
+import { Layout, Tree, Tabs, Card } from 'antd';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Chat, { Bubble, useMessages } from '@chatui/core';
@@ -19,8 +19,13 @@ import {
 import { downloadFiles } from './utils/FileDownloader.js';
 import sys_prompt from './utils/prompts.js';
 import packageJson from '../package.json';
+import Preview from './Components/Preview.js';
+import { Footer } from 'antd/es/layout/layout.js';
+import { sleep } from 'openai/core.mjs';
 
 const { Header, Content, Sider } = Layout;
+const { TabPane } = Tabs;
+
 const openai = new OpenAI({
   apiKey: '0000',
   dangerouslyAllowBrowser: true,
@@ -28,13 +33,14 @@ const openai = new OpenAI({
 });
 var message_history = [];
 
-
 const App = () => {
   const [treesData, setTreesData] = useState('');
   const [files, setFiles] = useState('');
   const [code, setCode] = useState('// 选择左侧文件以查看代码');
   const [language, setLanguage] = useState('javascript');
   const { messages, appendMsg, setTyping } = useMessages([]);
+  const [execResult, setExecResult] = useState('');
+  const previewRef = useRef();
 
   async function chat_stream(prompt, _msgId) {
     message_history.push(
@@ -218,6 +224,27 @@ const App = () => {
     alert(versionInfo);
   }
 
+  const handlePreviewOutput = (textContent) => {
+    setExecResult(execResult + '\n' + textContent);
+  };
+
+  const onTabsChange = (newActiveKey) => {
+    if (newActiveKey === '2') {
+      const waitForPreview = () => {
+        setTimeout(() => {
+          if (previewRef.current === undefined) {
+            waitForPreview();
+          } else {
+            if (previewRef.current) {
+              previewRef.current.doPreview(files);
+            }
+          }
+        }, 500);
+      };
+      waitForPreview();
+    }
+  };
+
   return (
     <Layout style={{ height: '100vh' }}>
       <Header style={{ color: 'black', backgroundColor: 'lightgray', fontSize: '18px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -256,26 +283,50 @@ const App = () => {
           />
         </Sider>
         <Layout>
-          <Sider width={250} style={{ background: 'lightgray', padding: '1px' }}>
-            <Tree
-              showLine
-              treeData={renderTreeNodes(treesData)}
-              defaultExpandAll={true}
-              onSelect={handleTreeSelect}
-              style={{ padding: '2px' }}
-              autoExpandParent={true}
-              showIcon
-            />
-          </Sider>
-          <Layout>
-            <Content style={{ background: '#fff', padding: 3 }}>
-              <div style={{ height: '100vh', overflow: 'auto', marginTop: '0px', fontSize: '15px' }}>
-                <SyntaxHighlighter language={language} style={prism} showLineNumbers={true}>
-                  {code}
-                </SyntaxHighlighter>
-              </div>
-            </Content>
-          </Layout>
+          <Content style={{ background: '#fff', padding: 3, border: '1px solid #ccc' }}>
+            <Tabs defaultActiveKey="1"  style={{ paddingLeft: 10 }} onChange={onTabsChange}>
+              <TabPane tab="代码" key="1">
+                <Layout>
+                  <Sider width={250} style={{ background: '#ffffff', padding: 1, margin: 3, border: '1px solid #ccc' }}>
+                    <Tree
+                      showLine
+                      treeData={renderTreeNodes(treesData)}
+                      defaultExpandAll={true}
+                      onSelect={handleTreeSelect}
+                      style={{ padding: '2px', marginTop: '2px' }}
+                      autoExpandParent={true}
+                      showIcon
+                    />
+                  </Sider>
+                  <Content style={{ background: '#ffffff', padding: 3, marginTop: 0, height: '83vh', border: '1px solid #ccc' }}>
+                    <SyntaxHighlighter language={language} style={prism} showLineNumbers={true}>
+                      {code}
+                    </SyntaxHighlighter>
+                  </Content>
+                </Layout>
+              </TabPane>
+              <TabPane tab="预览" key="2">
+                <Layout>
+                  <Layout>
+                    <Content style={{ minHeight: '70vh', padding: 3, border: '1px solid #ccc' }}>
+                      <Preview ref={previewRef} name="Preview！！" onOutput={handlePreviewOutput} />
+                    </Content>
+                  </Layout>
+                  <Footer style={{ padding: 3 }}>
+                    控制台消息
+                    <Card title='' style={{ overflow: 'auto', maxHeight: 100, wordWrap: 'break-word', border: '1px solid #ccc' }}>
+                      {execResult.split('\n').map((line, index) => (
+                        <span key={index}>
+                          {line}
+                          {index !== execResult.split('\n').length - 1 && <br />}
+                        </span>
+                      ))}
+                    </Card>
+                  </Footer>
+                </Layout>
+              </TabPane>
+            </Tabs>
+          </Content>
         </Layout>
       </Layout>
     </Layout>
