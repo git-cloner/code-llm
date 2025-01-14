@@ -3,7 +3,7 @@ const parseMarkdown = (markdown) => {
   const codeBlockRegex = /```(\w+)?\s*\n([\s\S]*?)```/g;
   let matches;
   const files = [];
-  let i = 0 ;
+  let i = 0;
 
   while ((matches = codeBlockRegex.exec(markdown)) !== null) {
     var fileType = matches[1];
@@ -29,13 +29,13 @@ const parseMarkdown = (markdown) => {
             .replace("--", '').trim();
         }
       }
-    }else{
+    } else {
       files.push({
         type: 'bash',
-        path: 'bash-' + i + '.md' ,
+        path: 'bash-' + i + '.md',
         content: fileContent,
       });
-      i++ ;
+      i++;
     }
     if (fileName.trim() !== "") {
       files.push({
@@ -46,8 +46,8 @@ const parseMarkdown = (markdown) => {
     }
   }
   //剔除代码块（但要保留命令行）
-  var newMarkdown = markdown.replace(/```bash([\s\S]*?)```/g, '$1');  
-  newMarkdown = newMarkdown.replace(/```sh([\s\S]*?)```/g, '$1'); 
+  var newMarkdown = markdown.replace(/```bash([\s\S]*?)```/g, '$1');
+  newMarkdown = newMarkdown.replace(/```sh([\s\S]*?)```/g, '$1');
   files.push({
     type: 'md',
     path: 'README.md',
@@ -113,4 +113,18 @@ const test = () => {
 test()
 */
 
-module.exports = { parseFileFromMarkdown, parseTreeFromFiles };
+const parseMermaidFromMarkdown = (markdown) => {
+  const mermaidRegex = /```mermaid([\s\S]*?)```/g;
+  let matched = "";
+  while ((match = mermaidRegex.exec(markdown)) !== null) {
+    matched = match[0];
+    break;
+  }
+  matched = matched.replaceAll("```mermaid",'').replaceAll("```",'');
+  matched = matched.replaceAll('"','') ;
+  matched = matched.replaceAll('(','').replaceAll(")",'');
+  matched = matched.replaceAll('{','[').replaceAll("}",']');
+  return matched ;
+}
+
+module.exports = { parseFileFromMarkdown, parseTreeFromFiles, parseMermaidFromMarkdown };

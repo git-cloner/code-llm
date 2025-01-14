@@ -1,10 +1,12 @@
 // src/App.js  
-import React, { useState, useRef } from 'react';
-import { Layout, Tree, Tabs, Card } from 'antd';
+import React, { useState } from 'react';
+import { Layout, Tree, Tabs } from 'antd';
+import { Spin } from 'antd';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Chat, { Bubble, useMessages } from '@chatui/core';
-import { parseFileFromMarkdown, parseTreeFromFiles } from './utils/ParseMarkdown.js';
+import { parseFileFromMarkdown, parseTreeFromFiles, parseMermaidFromMarkdown }
+  from './utils/ParseMarkdown.js';
 import { marked } from "marked";
 import OpenAI from 'openai';
 import '@chatui/core/dist/index.css';
@@ -17,11 +19,9 @@ import {
   HomeOutlined
 } from '@ant-design/icons';
 import { downloadFiles } from './utils/FileDownloader.js';
-import sys_prompt from './utils/prompts.js';
+import { sys_prompt, sys_prompt_mermaid } from './utils/prompts.js';
 import packageJson from '../package.json';
-import Preview from './Components/Preview.js';
-import { Footer } from 'antd/es/layout/layout.js';
-import { sleep } from 'openai/core.mjs';
+import MermaidChart from './Components/MermaidChart.js';
 
 const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
@@ -36,11 +36,13 @@ var message_history = [];
 const App = () => {
   const [treesData, setTreesData] = useState('');
   const [files, setFiles] = useState('');
-  const [code, setCode] = useState('// 选择左侧文件以查看代码');
+  const [code, setCode] = useState('// 选择左侧文件查看代码');
   const [language, setLanguage] = useState('javascript');
   const { messages, appendMsg, setTyping } = useMessages([]);
-  const [execResult, setExecResult] = useState('');
-  const previewRef = useRef();
+  const [chartText, setChartText] = useState('');
+  const [mermaidChart, setMermaidChart] = useState('');
+  const [mermaidChartId, setMermaidChartId] = useState('');
+  const [loading, setLoading] = useState(false);
 
   async function chat_stream(prompt, _msgId) {
     message_history.push(
@@ -64,6 +66,33 @@ const App = () => {
       showFiles(full_text);
     }
     message_history.push({ "role": "assistant", "content": full_text });
+  }
+
+  async function chat_stream_mermaid(prompt) {
+    setLoading(true);
+    let _message_history = [];
+    _message_history.push(
+      {
+        role: 'system', content: sys_prompt_mermaid
+      }
+    );
+    _message_history.push({ role: 'user', content: prompt });
+    const stream = openai.beta.chat.completions.stream({
+      model: 'glm-4-9b-chat',
+      messages: _message_history,
+      stream: true,
+    });
+    var full_text = "";
+    for await (const chunk of stream) {
+      if (chunk.choices[0]?.delta?.content === undefined) {
+        continue;
+      }
+      full_text = full_text + chunk.choices[0]?.delta?.content || '';
+    }
+    if (full_text.includes('```mermaid')) {
+      setChartText(parseMermaidFromMarkdown(full_text));
+    }
+    setLoading(false);
   }
 
   function showFiles(full_text) {
@@ -156,6 +185,8 @@ const App = () => {
       if (path === selectedKeys[0]) {
         setCode(content);
         setLanguage(getFileLanguage(type));
+        //
+        chat_stream_mermaid(content);
         return;
       }
     });
@@ -198,15 +229,15 @@ const App = () => {
 
   const defaultQuickReplies = [
     {
-      name: '使用 Tailwind 在 React 中构建一个邮件管理应用程序',
+      name: '使用Tailwind在React中构建一个邮件管理应用程序',
       isNew: true,
     },
     {
-      name: '使用 Astro 构建一个任务管理应用程序',
+      name: '使用Astro构建一个任务管理应用程序',
       isNew: true,
     },
     {
-      name: '使用 React 构建一个ChatBot程序',
+      name: '使用React构建一个ChatBot程序',
       isNew: true,
     },
     {
@@ -224,24 +255,10 @@ const App = () => {
     alert(versionInfo);
   }
 
-  const handlePreviewOutput = (textContent) => {
-    setExecResult(execResult + '\n' + textContent);
-  };
-
   const onTabsChange = (newActiveKey) => {
     if (newActiveKey === '2') {
-      const waitForPreview = () => {
-        setTimeout(() => {
-          if (previewRef.current === undefined) {
-            waitForPreview();
-          } else {
-            if (previewRef.current) {
-              previewRef.current.doPreview(files);
-            }
-          }
-        }, 500);
-      };
-      waitForPreview();
+      setMermaidChart(chartText);
+      setMermaidChartId(new Date().getTime());
     }
   };
 
@@ -284,7 +301,7 @@ const App = () => {
         </Sider>
         <Layout>
           <Content style={{ background: '#fff', padding: 3, border: '1px solid #ccc' }}>
-            <Tabs defaultActiveKey="1"  style={{ paddingLeft: 10 }} onChange={onTabsChange}>
+            <Tabs defaultActiveKey="1" style={{ paddingLeft: 10 }} onChange={onTabsChange}>
               <TabPane tab="代码" key="1">
                 <Layout>
                   <Sider width={250} style={{ background: '#ffffff', padding: 1, margin: 3, border: '1px solid #ccc' }}>
@@ -299,30 +316,18 @@ const App = () => {
                     />
                   </Sider>
                   <Content style={{ background: '#ffffff', padding: 3, marginTop: 0, height: '83vh', border: '1px solid #ccc' }}>
+                    <Spin spinning={loading} />
                     <SyntaxHighlighter language={language} style={prism} showLineNumbers={true}>
                       {code}
                     </SyntaxHighlighter>
                   </Content>
                 </Layout>
               </TabPane>
-              <TabPane tab="预览" key="2">
+              <TabPane tab="代码流程图" key="2">
                 <Layout>
-                  <Layout>
-                    <Content style={{ minHeight: '70vh', padding: 3, border: '1px solid #ccc' }}>
-                      <Preview ref={previewRef} name="Preview！！" onOutput={handlePreviewOutput} />
-                    </Content>
-                  </Layout>
-                  <Footer style={{ padding: 3 }}>
-                    控制台消息
-                    <Card title='' style={{ overflow: 'auto', maxHeight: 100, wordWrap: 'break-word', border: '1px solid #ccc' }}>
-                      {execResult.split('\n').map((line, index) => (
-                        <span key={index}>
-                          {line}
-                          {index !== execResult.split('\n').length - 1 && <br />}
-                        </span>
-                      ))}
-                    </Card>
-                  </Footer>
+                  <Content style={{ minHeight: '83vh', padding: 3, border: '1px solid #ccc' }}>
+                    <MermaidChart chart={mermaidChart} uniqueKey={mermaidChartId} />
+                  </Content>
                 </Layout>
               </TabPane>
             </Tabs>
