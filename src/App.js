@@ -1,7 +1,7 @@
 // src/App.js  
 import React, { useState } from 'react';
 import { Layout, Tree, Tabs } from 'antd';
-import { Spin } from 'antd';
+import { Spin, Alert } from 'antd';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { prism } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Chat, { Bubble, useMessages } from '@chatui/core';
@@ -316,7 +316,16 @@ const App = () => {
                     />
                   </Sider>
                   <Content style={{ background: '#ffffff', padding: 3, marginTop: 0, height: '83vh', border: '1px solid #ccc' }}>
-                    <Spin spinning={loading} />
+                    <div style={{ textAlign: 'center', marginTop: '5px' }}>
+                      <Spin spinning={loading} size="small" />
+                      {loading && (
+                        <Alert
+                          message={'正在生成流程图... ...'}
+                          type="info"
+                          style={{ marginTop: '15px' }}
+                        />
+                      )}
+                    </div>
                     <SyntaxHighlighter language={language} style={prism} showLineNumbers={true}>
                       {code}
                     </SyntaxHighlighter>
