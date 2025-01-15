@@ -1,6 +1,6 @@
 {
   "name": "code-llm",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "private": true,
   "dependencies": {
     "@chatui/core": "^2.4.2",
