@@ -120,10 +120,10 @@ const parseMermaidFromMarkdown = (markdown) => {
     matched = match[0];
     break;
   }
-  matched = matched.replaceAll("```mermaid",'').replaceAll("```",'');
-  matched = matched.replaceAll('"','') ;
-  matched = matched.replaceAll('(','').replaceAll(")",'');
-  matched = matched.replaceAll('{','[').replaceAll("}",']');
+  matched = matched.replace("```mermaid",'').replace("```",'');
+  matched = matched.replace("\"",'') ;
+  matched = matched.replace('(','').replace(")",'');
+  matched = matched.replace('{','[').replace("}",']');
   return matched ;
 }
 
